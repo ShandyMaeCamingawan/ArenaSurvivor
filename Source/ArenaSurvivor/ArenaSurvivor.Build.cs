@@ -13,7 +13,8 @@ public class ArenaSurvivor : ModuleRules
 			"Engine",
 			"InputCore",
 			"EnhancedInput",
-			"AIModule"
+			"AIModule",
+			"GameplayTasks"
 		});
 	}
 }
