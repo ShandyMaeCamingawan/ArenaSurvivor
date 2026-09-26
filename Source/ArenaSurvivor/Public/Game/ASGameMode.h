@@ -90,6 +90,8 @@ private:
 	void SpawnEnemy(const FVector& Location, EASEnemyType Type);
 	void TrySpawnPickup(const FVector& Location, float Chance);
 	void RefreshEnemiesRemaining();
+	void LoadRecords();
+	void SaveRecords();
 
 	UFUNCTION()
 	void HandleEnemyDeath(UASHealthComponent* HealthComponent, AController* Killer);

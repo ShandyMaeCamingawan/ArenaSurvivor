@@ -9,6 +9,7 @@
 #include "Engine/StaticMeshActor.h"
 #include "Engine/World.h"
 #include "Game/ASGameState.h"
+#include "Game/ASSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "Pickups/ASPickup.h"
 #include "Player/ASPlayerCharacter.h"
@@ -72,6 +73,7 @@ void AASGameMode::StartPlay()
 
 	Super::StartPlay();
 
+	LoadRecords();
 	ScheduleNextWave(FirstWaveDelay);
 }
 
@@ -224,6 +226,49 @@ void AASGameMode::HandlePlayerDeath(UASHealthComponent* HealthComponent, AContro
 	GetWorldTimerManager().ClearTimer(SpawnTimer);
 
 	UE_LOG(LogArenaSurvivor, Log, TEXT("Game over on wave %d with score %d"), State->Wave, State->Score);
+
+	SaveRecords();
+}
+
+void AASGameMode::LoadRecords()
+{
+	AASGameState* State = GetArenaState();
+	if (!State || !UGameplayStatics::DoesSaveGameExist(UASSaveGame::SlotName, UASSaveGame::UserIndex))
+	{
+		return;
+	}
+
+	if (const UASSaveGame* Save = Cast<UASSaveGame>(UGameplayStatics::LoadGameFromSlot(UASSaveGame::SlotName, UASSaveGame::UserIndex)))
+	{
+		State->HighScore = Save->HighScore;
+		State->BestWave = Save->BestWave;
+	}
+}
+
+void AASGameMode::SaveRecords()
+{
+	AASGameState* State = GetArenaState();
+	if (!State)
+	{
+		return;
+	}
+
+	State->bNewHighScore = State->Score > State->HighScore;
+	State->HighScore = FMath::Max(State->HighScore, State->Score);
+	State->BestWave = FMath::Max(State->BestWave, State->Wave);
+
+	UASSaveGame* Save = Cast<UASSaveGame>(UGameplayStatics::CreateSaveGameObject(UASSaveGame::StaticClass()));
+	if (!Save)
+	{
+		return;
+	}
+
+	Save->HighScore = State->HighScore;
+	Save->BestWave = State->BestWave;
+	if (!UGameplayStatics::SaveGameToSlot(Save, UASSaveGame::SlotName, UASSaveGame::UserIndex))
+	{
+		UE_LOG(LogArenaSurvivor, Warning, TEXT("Failed to write save slot %s"), *UASSaveGame::SlotName);
+	}
 }
 
 void AASGameMode::RefreshEnemiesRemaining()

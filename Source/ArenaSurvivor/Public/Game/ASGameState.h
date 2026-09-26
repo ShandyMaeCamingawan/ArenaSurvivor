@@ -33,4 +33,14 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Arena")
 	bool bGameOver = false;
+
+	/** Best score from previous runs, loaded from the save slot at match start. */
+	UPROPERTY(BlueprintReadOnly, Category = "Arena")
+	int32 HighScore = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Arena")
+	int32 BestWave = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Arena")
+	bool bNewHighScore = false;
 };

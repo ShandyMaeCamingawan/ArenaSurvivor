@@ -77,6 +77,7 @@ void AASHUD::DrawMatchStatus(const AASGameState* State)
 	DrawTextScaled(FString::Printf(TEXT("WAVE %d"), FMath::Max(1, State->Wave)), X, Y, GEngine->GetLargeFont(), 1.2f, AccentColor);
 	DrawTextScaled(FString::Printf(TEXT("Score  %d"), State->Score), X, Y + 44.f * UIScale, Font, 1.f, TextColor);
 	DrawTextScaled(FString::Printf(TEXT("Enemies  %d"), State->EnemiesRemaining), X, Y + 72.f * UIScale, Font, 1.f, TextColor);
+	DrawTextScaled(FString::Printf(TEXT("Best  %d"), FMath::Max(State->HighScore, State->Score)), X, Y + 100.f * UIScale, Font, 1.f, FLinearColor(0.7f, 0.7f, 0.7f));
 }
 
 void AASHUD::DrawCenterMessages(const AASGameState* State)
@@ -85,10 +86,14 @@ void AASHUD::DrawCenterMessages(const AASGameState* State)
 
 	if (State->bGameOver)
 	{
-		DrawRect(PanelColor, 0.f, CenterY - 20.f * UIScale, Canvas->ClipX, 190.f * UIScale);
+		DrawRect(PanelColor, 0.f, CenterY - 20.f * UIScale, Canvas->ClipX, 220.f * UIScale);
 		DrawCenteredText(TEXT("YOU DIED"), CenterY, GEngine->GetLargeFont(), 2.5f, FLinearColor(0.95f, 0.2f, 0.2f));
 		DrawCenteredText(FString::Printf(TEXT("Wave %d   Score %d   Kills %d"), State->Wave, State->Score, State->Kills), CenterY + 80.f * UIScale, GEngine->GetMediumFont(), 1.2f, TextColor);
-		DrawCenteredText(TEXT("Press R to try again"), CenterY + 120.f * UIScale, GEngine->GetMediumFont(), 1.f, AccentColor);
+		const FString Record = State->bNewHighScore
+			? FString(TEXT("NEW HIGH SCORE!"))
+			: FString::Printf(TEXT("Best  %d  (wave %d)"), State->HighScore, State->BestWave);
+		DrawCenteredText(Record, CenterY + 115.f * UIScale, GEngine->GetMediumFont(), 1.1f, State->bNewHighScore ? AccentColor : TextColor);
+		DrawCenteredText(TEXT("Press R to try again"), CenterY + 150.f * UIScale, GEngine->GetMediumFont(), 1.f, AccentColor);
 		return;
 	}
 
