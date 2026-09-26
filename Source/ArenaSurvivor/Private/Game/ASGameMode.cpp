@@ -14,6 +14,7 @@
 #include "Player/ASPlayerCharacter.h"
 #include "Player/ASPlayerController.h"
 #include "TimerManager.h"
+#include "UI/ASHUD.h"
 #include "UObject/ConstructorHelpers.h"
 
 AASGameMode::AASGameMode()
@@ -21,6 +22,7 @@ AASGameMode::AASGameMode()
 	DefaultPawnClass = AASPlayerCharacter::StaticClass();
 	PlayerControllerClass = AASPlayerController::StaticClass();
 	GameStateClass = AASGameState::StaticClass();
+	HUDClass = AASHUD::StaticClass();
 
 	EnemyClass = AASEnemyCharacter::StaticClass();
 	PickupClass = AASPickup::StaticClass();
