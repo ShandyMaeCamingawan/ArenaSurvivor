@@ -10,7 +10,7 @@ class UInputMappingContext;
 struct FInputActionValue;
 
 /**
- * Twin-stick style controls: WASD / left stick to move, mouse / right stick to aim.
+ * Twin-stick style controls: WASD / left stick to move, mouse / right stick to aim, space / A to dash.
  * Input actions and the mapping context are created in code, so no input assets are needed.
  */
 UCLASS()
@@ -38,6 +38,7 @@ private:
 	void HandleAimReleased(const FInputActionValue& Value);
 	void HandleFirePressed();
 	void HandleFireReleased();
+	void HandleDash();
 	void HandleRestart();
 
 	UPROPERTY(Transient)
@@ -51,6 +52,9 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<UInputAction> FireAction;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UInputAction> DashAction;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UInputAction> RestartAction;

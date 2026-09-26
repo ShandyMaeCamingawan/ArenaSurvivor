@@ -57,6 +57,7 @@ void AASPlayerController::BuildInputAssets()
 	MoveAction = MakeAction(this, TEXT("IA_Move"), EInputActionValueType::Axis2D);
 	AimAction = MakeAction(this, TEXT("IA_Aim"), EInputActionValueType::Axis2D);
 	FireAction = MakeAction(this, TEXT("IA_Fire"), EInputActionValueType::Boolean);
+	DashAction = MakeAction(this, TEXT("IA_Dash"), EInputActionValueType::Boolean);
 	RestartAction = MakeAction(this, TEXT("IA_Restart"), EInputActionValueType::Boolean);
 
 	DefaultMapping = NewObject<UInputMappingContext>(this, TEXT("IMC_Default"));
@@ -76,6 +77,10 @@ void AASPlayerController::BuildInputAssets()
 
 	DefaultMapping->MapKey(FireAction, EKeys::LeftMouseButton);
 	DefaultMapping->MapKey(FireAction, EKeys::Gamepad_RightTrigger);
+
+	DefaultMapping->MapKey(DashAction, EKeys::SpaceBar);
+	DefaultMapping->MapKey(DashAction, EKeys::LeftShift);
+	DefaultMapping->MapKey(DashAction, EKeys::Gamepad_FaceButton_Bottom);
 
 	DefaultMapping->MapKey(RestartAction, EKeys::R);
 	DefaultMapping->MapKey(RestartAction, EKeys::Gamepad_Special_Right);
@@ -100,6 +105,7 @@ void AASPlayerController::SetupInputComponent()
 	Input->BindAction(AimAction, ETriggerEvent::Completed, this, &AASPlayerController::HandleAimReleased);
 	Input->BindAction(FireAction, ETriggerEvent::Started, this, &AASPlayerController::HandleFirePressed);
 	Input->BindAction(FireAction, ETriggerEvent::Completed, this, &AASPlayerController::HandleFireReleased);
+	Input->BindAction(DashAction, ETriggerEvent::Started, this, &AASPlayerController::HandleDash);
 	Input->BindAction(RestartAction, ETriggerEvent::Started, this, &AASPlayerController::HandleRestart);
 }
 
@@ -212,6 +218,15 @@ void AASPlayerController::HandleFireReleased()
 	if (AASPlayerCharacter* PlayerCharacter = Cast<AASPlayerCharacter>(GetPawn()))
 	{
 		PlayerCharacter->GetWeaponComponent()->StopFire();
+	}
+}
+
+void AASPlayerController::HandleDash()
+{
+	if (AASPlayerCharacter* PlayerCharacter = GetLivingCharacter())
+	{
+		// Dash where the player is steering; fall back to the facing direction when standing still.
+		PlayerCharacter->TryDash(FVector(MoveInput.Y, MoveInput.X, 0.f));
 	}
 }
 

@@ -7,6 +7,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "TimerManager.h"
 
 AASPlayerCharacter::AASPlayerCharacter()
 {
@@ -82,4 +83,35 @@ void AASPlayerCharacter::HandleDeath(UASHealthComponent* DeadComponent, AControl
 	WeaponComponent->StopFire();
 	GetCharacterMovement()->DisableMovement();
 	ASVisuals::SetColor(BodyMesh, FLinearColor(0.15f, 0.15f, 0.15f));
+}
+
+bool AASPlayerCharacter::TryDash(FVector Direction)
+{
+	if (!IsAlive() || GetDashCooldownRemaining() > 0.f)
+	{
+		return false;
+	}
+
+	Direction.Z = 0.f;
+	if (!Direction.Normalize())
+	{
+		Direction = GetActorForwardVector();
+	}
+
+	LastDashTime = GetWorld()->GetTimeSeconds();
+	LaunchCharacter(Direction * DashSpeed + FVector(0.f, 0.f, DashLift), true, true);
+
+	HealthComponent->SetInvulnerable(true);
+	GetWorldTimerManager().SetTimer(DashInvulnerabilityTimer, this, &AASPlayerCharacter::EndDashInvulnerability, DashInvulnerabilityTime, false);
+	return true;
+}
+
+void AASPlayerCharacter::EndDashInvulnerability()
+{
+	HealthComponent->SetInvulnerable(false);
+}
+
+float AASPlayerCharacter::GetDashCooldownRemaining() const
+{
+	return FMath::Max(0.f, LastDashTime + DashCooldown - GetWorld()->GetTimeSeconds());
 }
