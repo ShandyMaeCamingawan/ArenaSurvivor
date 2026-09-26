@@ -4,12 +4,11 @@
 
 #if WITH_DEV_AUTOMATION_TESTS
 
-namespace
-{
-	constexpr EAutomationTestFlags TestFlags = EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter;
-}
+// A macro rather than a typed constant: EAutomationTestFlags changed from a namespaced
+// enum to an enum class in 5.5, and the plain expression compiles against both.
+#define AS_TEST_FLAGS (EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FASWaveEnemyCountTest, "ArenaSurvivor.Waves.EnemyCountGrows", TestFlags)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FASWaveEnemyCountTest, "ArenaSurvivor.Waves.EnemyCountGrows", AS_TEST_FLAGS)
 
 bool FASWaveEnemyCountTest::RunTest(const FString& Parameters)
 {
@@ -25,7 +24,7 @@ bool FASWaveEnemyCountTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FASWaveHealthScalingTest, "ArenaSurvivor.Waves.HealthScaling", TestFlags)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FASWaveHealthScalingTest, "ArenaSurvivor.Waves.HealthScaling", AS_TEST_FLAGS)
 
 bool FASWaveHealthScalingTest::RunTest(const FString& Parameters)
 {
@@ -40,7 +39,7 @@ bool FASWaveHealthScalingTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FASWaveEnemyMixTest, "ArenaSurvivor.Waves.EnemyMix", TestFlags)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FASWaveEnemyMixTest, "ArenaSurvivor.Waves.EnemyMix", AS_TEST_FLAGS)
 
 bool FASWaveEnemyMixTest::RunTest(const FString& Parameters)
 {
@@ -64,7 +63,7 @@ bool FASWaveEnemyMixTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FASEnemyTuningTest, "ArenaSurvivor.Enemies.TuningRoles", TestFlags)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FASEnemyTuningTest, "ArenaSurvivor.Enemies.TuningRoles", AS_TEST_FLAGS)
 
 bool FASEnemyTuningTest::RunTest(const FString& Parameters)
 {
@@ -80,5 +79,7 @@ bool FASEnemyTuningTest::RunTest(const FString& Parameters)
 
 	return true;
 }
+
+#undef AS_TEST_FLAGS
 
 #endif // WITH_DEV_AUTOMATION_TESTS
